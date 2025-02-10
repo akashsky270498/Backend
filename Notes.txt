@@ -1,0 +1,4 @@
+-> Git never tracks folder it only tracks file.
+-> .gitkeep file this file is used to just keep it inside any folder which is empty so that the folder gets tracked by GIT.
+-> use git ignore generator.
+-> npm i -D nodemon || npm i --save-dev nodemon ->> dev dependencies = used ony in dev branch
