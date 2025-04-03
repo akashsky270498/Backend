@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { dataLimit } from "./constants";
+import { dataLimit } from "./constants.js";
 
 const app = express()
 
@@ -27,5 +27,9 @@ app.use(express.static("public"));
 
 //Configuring cookie parser
 app.use(cookieParser()); // to access & set the cookies from my server present in user browser's.
+
+import userRouter from "./routes/user.routes.js";
+
+app.use("/api/v1/users", userRouter);
 
 export default app;
