@@ -30,7 +30,7 @@ const userSchema = new Schema(
 
         avatar: {
             type: String,
-            reuqired: true, //Couldinary url
+            required: true, //Couldinary url
         },
 
         coverImage: {
@@ -62,7 +62,7 @@ const userSchema = new Schema(
 //don't use arrow function here bcoz this will not work as "this" keyword current context problem.
 userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next();
-    this.password = await bcrypt.has(this.password, 10);
+    this.password = await bcrypt.hash(this.password, 10);
     next();
 })
 

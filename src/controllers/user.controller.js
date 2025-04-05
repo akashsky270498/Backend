@@ -7,7 +7,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js"
 const registerUser = asyncHandler(async (req, res) => {
     // Taking user data from front-enf & destructuring it.
     const { fullName, email, username, password } = req.body;
-    console.log("Email:", email);
+    // console.log("Body:", req.body);
 
     //Checking if the fields are empty or not
     if ([fullName, email, username, password].some((field) => field?.trim() === "")) {
@@ -16,7 +16,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
 
     //Checking if the user already exists
-    const existingUser = User.findOne({
+    const existingUser = await User.findOne({
         $or: [{ email }, { username }]
     });
 
@@ -27,7 +27,14 @@ const registerUser = asyncHandler(async (req, res) => {
     //Checking for images (avatar is required)
 
     const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImageLocalPath = req.files?.coverImage[0]?.path;
+    // const coverImageLocalPath = req.files?.coverImage[0]?.path;
+    // console.log("Files", req.files);
+
+    let coverImageLocalPath;
+
+    if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
+        coverImageLocalPath = req.files.coverImage[0].path;
+    }
 
     if (!avatarLocalPath) {
         throw new ApiError(400, "Avatar is required.")
@@ -52,16 +59,17 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     //Hiding password & refresh token field from response
-    const createdUser = await User.findById(userData._id).select(
-        "-password -refreshToken"
-    );
+
+    const user = await User.create(userData); 
+
+    const createdUser = await User.findById(user._id).select("-password -refreshToken");
 
     if (!createdUser) {
         throw new ApiError(500, "Something went wrong while regitering the user.")
     };
 
     return res.status(201).json(
-        new ApiResponse(200, createdUser, "User registered successfully.")
+        new ApiResponse(200, "User registered successfully.", createdUser)
     );
 
 })
