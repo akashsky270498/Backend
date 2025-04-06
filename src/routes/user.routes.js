@@ -22,14 +22,14 @@ router.route("/register").post(
 )
 
 router.route("/login").post(loginUser);
+router.route("/refresh-token").post(refreshAccessToken);
 
 
 //secured routes
 router.route("/logout").post(verifyJWT, logoutUser);
-router.route("/refresh-token").post(refreshAccessToken);
-router.route("/change-password").post(changePassword);
-router.route("/get-user").post(getUser);
-router.route("/avatar").post(updateUserAvatar);
-router.route("/cover-image").post(updateUserCoverImage);
+router.route("/change-password").post(verifyJWT,changePassword);
+router.route("/get-user").post(verifyJWT,getUser);
+router.route("/avatar").post(verifyJWT,updateUserAvatar);
+router.route("/cover-image").post(verifyJWT,updateUserCoverImage);
 
 export default router;
