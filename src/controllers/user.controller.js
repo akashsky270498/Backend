@@ -204,9 +204,158 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         throw new ApiError(500, error?.message || "Something went wrong while refreshing the access token.")
     }
 })
+
+const changePassword = asyncHandler(async (req, res) => {
+
+    try {
+        const { oldPassword, newPassword } = req.body;
+
+        const user = await User.findById(req.user?._id);
+
+        const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+
+        if (!isPasswordCorrect) {
+            throw new ApiError(400, "Invalid old password.")
+        }
+
+        user.password = newPassword;
+        await user.save({ validateBeforeSave: false });
+
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(200, "Password changes successfully.")
+            )
+
+    } catch (error) {
+        throw new ApiError(500, error?.message || "Internal server error.")
+    }
+})
+
+const getUser = asyncHandler(async (req, res) => {
+    try {
+
+        return res.status(200)
+            .json(
+                new ApiResponse(200, "User retrieved successfully.", {
+                    userData: req.user
+                })
+            )
+    } catch (error) {
+        throw new ApiError(500, "Internal server error", error?.message);
+    }
+})
+
+const updateUser = asyncHandler(async (req, res) => {
+    try {
+        const { fullName, email } = req.body;
+
+        if (!(fullName || email)) {
+            throw new ApiError(400, "All fields are required.")
+        }
+        const updatedFields = {};
+        if (fullName) updatedFields.fullName = fullName;
+        if (email) updatedFields.email = email;
+
+        const updatedUser = await User.findByIdAndUpdate(
+            req.user?._id,
+            {
+                $set: {
+                    updatedFields
+                }
+            },
+            { new: true, select: "-password" }
+        )
+
+        return res
+            .status(200)
+            .json(200, "User details updated successfully.",
+                {
+                    data: updatedUser
+                }
+            );
+
+    } catch (error) {
+        throw new ApiError(500, error?.message || "Internal server error.")
+    }
+})
+
+const updateUserAvatar = asyncHandler(async (req, res) => {
+    try {
+        const avatarLocalPath = req.file?.path;
+
+        if (!avatarLocalPath) {
+            throw new ApiError(400, "Avatar file is missing.")
+        }
+
+        const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+        if (!avatar.url) {
+            throw new ApiError(400, "Error while uploading on Cloudinary.")
+        }
+
+        const user = await User.findByIdAndUpdate(
+            req.user?._id,
+            {
+                $set: {
+                    avatar: avatar.url
+                }
+            }, { new: true }
+        ).select("-password");
+
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(200, "Avatar has been updated successfully.", user)
+            )
+
+    } catch (error) {
+        throw new ApiError(500, error?.message || "Internal server error.")
+    }
+})
+
+const updateUserCoverImage = asyncHandler(async (req, res) => {
+    try {
+        const { coverImageLocalPath } = req.file?.path;
+
+        if (!coverImageLocalPath) {
+            throw new ApiError(400, "Cover image is missing.")
+        }
+
+        const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+
+        if (!coverImage?.url) {
+            throw new ApiError(400, "Error while uploading on Cloudinary.")
+        }
+
+        const user = await User.findByIdAndUpdate(
+            req.user?._id,
+            {
+                $set: {
+                    coverImage: coverImage?.url
+                }
+            },
+            { new: true }
+        ).select("-password");
+
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(200, "Cover image has been updated successfully.", user)
+            )
+            
+    } catch (error) {
+        throw new ApiError(500, error?.message || "Internal server error.");
+    }
+})
 export {
     registerUser,
     loginUser,
     logoutUser,
-    refreshAccessToken
+    refreshAccessToken,
+    changePassword,
+    getUser,
+    updateUser,
+    updateUserAvatar,
+    updateUserCoverImage
 }
