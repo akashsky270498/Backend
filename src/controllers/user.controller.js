@@ -343,11 +343,152 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
             .json(
                 new ApiResponse(200, "Cover image has been updated successfully.", user)
             )
-            
+
     } catch (error) {
         throw new ApiError(500, error?.message || "Internal server error.");
     }
 })
+
+const getUserChannelProfile = asyncHandler(async (req, res) => {
+
+    try {
+        const username = req.parmas;
+
+        if (!username?.trim()) {
+            throw new ApiError(400, "Username is missing.");
+        }
+
+        const channel = User.aggregate([
+            {
+                $match: {
+                    username: username?.toLowerCase()
+                }
+            },
+            {
+                $lookup: {
+                    from: 'subscriptions', // always in lower case & it should be in plural form.
+                    localField: '_id',
+                    foreignField: 'channel',
+                    as: "subscribers"
+                }
+            },
+            {
+                $lookup: {
+                    from: 'subscriptions',
+                    localField: '_id',
+                    foreignField: 'subscriber',
+                    as: 'subscribedTo'
+                }
+            },
+            {
+                $addFields: {
+                    subscribersCount: {
+                        $size: "$subscribers"
+                    },
+                    channelSubscribedToCount: {
+                        $size: "$subscribedTo"
+                    },
+                    isSubscribed: {
+                        $cond: {
+                            if: {
+                                $in: [req.user?._id, "$subscribers.subscriber"]
+                            },
+                            then: true,
+                            else: false
+                        }
+                    }
+                }
+            },
+            {
+                $project: {
+                    fullName: 1,
+                    username: 1,
+                    subscribersCount: 1,
+                    channelSubscribedToCount: 1,
+                    isSubscribed: 1,
+                    avatar: 1,
+                    coverImage: 1,
+                    email: 1,
+                    createdAt: 1
+                }
+            }
+        ]);
+
+        if (!channel?.length) {
+            throw new Apierror(404, "Channel not found.")
+        }
+
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(200, "User channel reterived successfully.", channel[0])
+            )
+
+    } catch (error) {
+        throw new ApiError(500, error?.message || "Internal server error.")
+
+    }
+})
+
+const getWatchHistory = asyncHandler(async (req, res) => {
+    try {
+        const user = await User.aggregate([
+            {
+                $match: {
+                    _id: new mongoose.Types.ObjectId(req.user?._id)
+                }
+            },
+            {
+                $lookup: {
+                    from: "videos",
+                    localField: "watchHistory",
+                    foreignField: "_id",
+                    as: "watchHistory",
+                    pipeline: [
+                        {
+                            $lookup: {
+                                from: "users",
+                                localField: "owner",
+                                foreignField: "_id",
+                                as: "owner",
+                                pipeline: [
+                                    {
+                                        $project: {
+                                            fullName: 1,
+                                            username: 1,
+                                            avatar: 1
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            $addFields: {
+                                owner: {
+                                    $first: "$owner"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ]);
+
+        res
+            .status(200
+                .json(
+                    new ApiResponse(200,
+                        "user watch history retrieved successfully.",
+                        user[0]?.getWatchHistory
+                    )
+                )
+            )
+    } catch (error) {
+        throw new ApiError(500, error?.message || "Internal server error.");
+    }
+});
+
+
 export {
     registerUser,
     loginUser,
@@ -357,5 +498,7 @@ export {
     getUser,
     updateUser,
     updateUserAvatar,
-    updateUserCoverImage
+    updateUserCoverImage,
+    getUserChannelProfile,
+    getWatchHistory
 }
