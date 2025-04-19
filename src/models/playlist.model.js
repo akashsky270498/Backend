@@ -1,4 +1,4 @@
-import mongoose, { Schmea } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const playlistSchema = new Schema({
 
@@ -19,7 +19,7 @@ const playlistSchema = new Schema({
 
     owner: {
         type: Schema.Types.ObjectId,
-        ref: "User" 
+        ref: "User"
     }
 }, { timestamps: true });
 
