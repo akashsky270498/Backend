@@ -4,6 +4,7 @@ import { ApiResponse } from "../utils/apiResponse.js"
 import { User } from "../models/user.model.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
 import { generateAccessAndRefreshTokens } from "../utils/generateTokens.js"
+import mongoose from "mongoose"
 
 const registerUser = asyncHandler(async (req, res) => {
     // Taking user data from front-enf & destructuring it.
@@ -121,11 +122,11 @@ const loginUser = asyncHandler(async (req, res) => {
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
         .json(
-            new ApiResponse(200, "User logged in successfully.", {
-                user: loggedInUser,
+            new ApiResponse(200, {
+                loggedInUser,
                 accessToken,
                 refreshToken
-            })
+            }, "User logged in successfully.")
         )
 })
 
@@ -133,8 +134,8 @@ const logoutUser = asyncHandler(async (req, res) => {
     const data = await User.findByIdAndUpdate(
         req?.user?.id,
         {
-            $set: {
-                refreshToken: undefined
+            $unset: {
+                refreshToken: 1
             },
         },
         {
@@ -352,16 +353,16 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 const getUserChannelProfile = asyncHandler(async (req, res) => {
 
     try {
-        const username = req.parmas;
+        const username = req.params;
 
-        if (!username?.trim()) {
+        if (!username) {
             throw new ApiError(400, "Username is missing.");
         }
 
         const channel = User.aggregate([
             {
                 $match: {
-                    username: username?.toLowerCase()
+                    username: username
                 }
             },
             {
@@ -415,7 +416,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
         ]);
 
         if (!channel?.length) {
-            throw new Apierror(404, "Channel not found.")
+            throw new ApiError(404, "Channel not found.")
         }
 
         return res
@@ -475,14 +476,14 @@ const getWatchHistory = asyncHandler(async (req, res) => {
         ]);
 
         res
-            .status(200
-                .json(
-                    new ApiResponse(200,
-                        "user watch history retrieved successfully.",
-                        user[0]?.getWatchHistory
-                    )
+            .status(200)
+            .json(
+                new ApiResponse(200,
+                    user[0]?.getWatchHistory,
+                    "user watch history retrieved successfully.",
                 )
             )
+
     } catch (error) {
         throw new ApiError(500, error?.message || "Internal server error.");
     }
