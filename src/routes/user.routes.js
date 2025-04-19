@@ -32,7 +32,7 @@ router.route("/get-user").get(verifyJWT, getUser);
 router.route("/avatar").patch(verifyJWT, upload.single("avatar"), updateUserAvatar);
 router.route("/cover-image").patch(verifyJWT, upload.single("coverImage"), updateUserCoverImage);
 router.route("/update-user").patch(verifyJWT, updateUser);
-router.route("/get-user-channel-profile").get(verifyJWT, getUserChannelProfile);
+router.route("/get-user-channel-profile/:username").get(verifyJWT, getUserChannelProfile);
 router.route("/get-user-watch-history").get(verifyJWT, getWatchHistory);
 
 export default router;
