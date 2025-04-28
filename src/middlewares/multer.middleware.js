@@ -10,6 +10,27 @@ const storage = multer.diskStorage({
     }
 });
 
+
+const fileFilter = (req, file, cb) => {
+    const allowedTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/gif",
+        "video/mp4",
+        "video/quicktime", // mov
+        "video/x-msvideo", // avi
+    ];
+    const isMimeTypeAllowed = allowedTypes.includes(file.mimetype); // <--- NOTICE: file.mimetype (NOT mimeType spelling mistake)
+    
+    if (isMimeTypeAllowed) {
+        return cb(null, true);
+    } else {
+        cb(new Error("Only images & videos are allowed."));
+    }
+}
+
 export const upload = multer({
-    storage
+    storage,
+    fileFilter
 })
