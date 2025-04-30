@@ -29,4 +29,15 @@ const uploadOnCloudinary = async (localFilePath) => {
     }
 };
 
-export { uploadOnCloudinary };
+const extractPublicUrl = (url) => {
+    const parts = url.split('/')
+    const filename = parts.pop() || "";
+    const publicId = filename.split('.')[0];
+    return publicId;
+}
+
+const deleteFromCloundinary = async (publicId) => {
+    return await cloudinary.uploader.destroy(publicId)
+}
+
+export { uploadOnCloudinary, extractPublicUrl, deleteFromCloundinary };

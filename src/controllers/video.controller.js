@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnCloudinary, extractPublicUrl, deleteFromCloundinary } from "../utils/cloudinary.js";
 import { Video } from "../models/video.model.js"
 
 const publishAVideo = asyncHandler(async (req, res) => {
@@ -225,9 +225,45 @@ const updateVideoById = asyncHandler(async (req, res) => {
     }
 })
 
+const deleteVideoById = asyncHandler(async (req, res) => {
+
+    try {
+        const { id } = req.params;
+
+        if (!id) {
+            throw new ApiError(404, "Video id is required.")
+        }
+
+        const video = await Video.findById(id);
+
+        if (!video) {
+            throw new ApiError(404, "Video not found.");
+        }
+
+        if (video.owner.toString() !== req.user?._id.toString()) {
+            throw new ApiError(403, "You are not authorized to delete this video.");
+        }
+
+        if (video.thumbnail) {
+            const publicId = await extractPublicUrl(video.thumbnail);
+            await deleteFromCloundinary(publicId);
+        }
+
+        await video.deleteOne();
+        return res.status(200).json(
+            new ApiResponse(200, null, "Video delered successfully.")
+        )
+
+    } catch (error) {
+        console.error("Error: ", error.message);
+        throw new ApiError(500, "Internal server error.")
+    }
+})
+
 export {
     publishAVideo,
     getAllVideos,
     getVideoById,
-    updateVideoById
+    updateVideoById,
+    deleteVideoById
 }
