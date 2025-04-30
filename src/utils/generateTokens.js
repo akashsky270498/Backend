@@ -4,7 +4,6 @@ const generateAccessAndRefreshTokens = async (userId) => {
 
     try {
         const user = await User.findById(userId);
-        console.log(user)
 
         if (!user) {
             throw new ApiError(404, "User not found while generating tokens.");
@@ -12,8 +11,6 @@ const generateAccessAndRefreshTokens = async (userId) => {
 
         const accessToken = await user.generateAccessToken();
         const refreshToken = await user.generateRefreshToken();
-        console.log(accessToken)
-        console.log(refreshToken)
 
         // Saving refresh token in the database
         user.refreshToken = refreshToken;

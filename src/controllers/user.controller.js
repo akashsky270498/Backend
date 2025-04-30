@@ -143,7 +143,6 @@ const logoutUser = asyncHandler(async (req, res) => {
             new: true
         }
     )
-    console.log("d", data)
     const options = {
         httpOnly: true,
         secure: true
@@ -472,7 +471,6 @@ const getWatchHistory = asyncHandler(async (req, res) => {
                 }
             }
         ]);
-        console.log("user:",user)
         res
             .status(200)
             .json(
