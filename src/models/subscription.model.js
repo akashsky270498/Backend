@@ -1,9 +1,9 @@
-import mongooose, { Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const subscriptionSchema = new Schema({
 
     subscriber: {
-        type: Schema.Types.objectId, //One who is subscribing
+        type: Schema.Types.ObjectId, //One who is subscribing
         ref: "User"
     },
 
