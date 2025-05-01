@@ -31,9 +31,11 @@ app.use(cookieParser()); // to access & set the cookies from my server present i
 import userRouter from "./routes/user.routes.js";
 import videoRouter from "./routes/video.routes.js";
 import subcriptionRouter from "./routes/subscription.routes.js";
+import tweetRouter from "./routes/tweet.routes.js"
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/videos", videoRouter);
 app.use("/api/v1/subscriptions", subcriptionRouter);
+app.use("/api/v1/tweets", tweetRouter);
 
 export default app;
