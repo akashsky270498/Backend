@@ -3,6 +3,7 @@ import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { Comment } from "../models/comment.model.js";
 import { Video } from "../models/video.model.js"; // Added Video import
+import mongoose from "mongoose";
 
 const addComment = asyncHandler(async (req, res) => {
     try {
@@ -69,7 +70,7 @@ const getCommentsByVideoId = asyncHandler(async (req, res) => {
             throw new ApiError(404, "Video not found.");
         }
 
-        const aggregateQuery = await Comment.aggregate([
+        const aggregateQuery = Comment.aggregate([
             {
                 $match: {
                     video: new mongoose.Types.ObjectId(videoId)
@@ -109,7 +110,7 @@ const getCommentsByVideoId = asyncHandler(async (req, res) => {
             limit
         };
 
-        const comments = await Comment.mongooseAggregatePaginate(aggregateQuery, options);
+        const comments = await Comment.aggregatePaginate(aggregateQuery, options);
 
         if (comments.length === 0) {
             return res.status(200).json(
@@ -197,7 +198,7 @@ const deleteCommentById = asyncHandler(async (req, res) => {
             throw new ApiError(404, "Comment not found.");
         }
 
-        if (comment.owner.toString() !== userId.tostring()) {
+        if (comment.owner.toString() !== userId.toString()) {
             throw new ApiError(403, "You are not authorized to delete this comment.");
         }
 

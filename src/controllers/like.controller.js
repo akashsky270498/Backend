@@ -1,4 +1,4 @@
-import { asyncHandler } from 'express-async-handler.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
 import { ApiError } from '../utils/apiError.js';
 import { Like } from '../models/like.model.js';
 import { ApiResponse } from '../utils/apiResponse.js';
@@ -12,8 +12,8 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
     try {
         const { videoId } = req.params;
 
-        if (!videoId || mongoose.Types.ObjectId.isValid(videoId)) {
-            throw new APiError(422, "Video Id is required.");
+        if (!videoId || !mongoose.Types.ObjectId.isValid(videoId)) {
+            throw new ApiError(422, "Video Id is required.");
         }
 
         const userId = req.user?._id;
@@ -57,7 +57,7 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
     try {
         const { commentId } = req.params;
 
-        if (!commentId || !mongoose.Types.ObjectId(commentId)) {
+        if (!commentId || !mongoose.Types.ObjectId.isValid(commentId)) {
             throw new ApiError(422, "Comment Id is required.");
         }
 
@@ -116,7 +116,6 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
             tweet: tweetId,
             likedBy: userId
         })
-
         let message;
 
         if (existingLike) {
@@ -140,7 +139,7 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
     }
 })
 
-const getLikedVides = asyncHandler(async (req, res) => {
+const getLikedVideos = asyncHandler(async (req, res) => {
 
     try {
         const userId = req.user?._id;
@@ -179,5 +178,5 @@ export {
     toggleVideoLike,
     toggleCommentLike,
     toggleTweetLike,
-    getLikedVides
+    getLikedVideos
 }

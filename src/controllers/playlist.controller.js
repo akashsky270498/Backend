@@ -2,13 +2,15 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { Playlist } from "../models/playlist.model.js";
+import { User } from "../models/user.model.js";
+import mongoose from "mongoose";
 
 const createPlaylist = asyncHandler(async (req, res) => {
 
     try {
-        const { name, descirption } = req.body;
+        const { name, description } = req.body;
 
-        if ([name, descirption].some((field) => !field?.trim() === "")) {
+        if ([name, description].some((field) => !field?.trim() === "")) {
             throw new ApiError(422, "Name and description are required.");
         }
 
@@ -20,7 +22,7 @@ const createPlaylist = asyncHandler(async (req, res) => {
 
         const newPlaylist = await Playlist.create({
             name: name.trim(),
-            description: descirption.trim(),
+            description: description.trim(),
             owner: userId
         });
 
@@ -60,7 +62,7 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
         })
             .populate({
                 path: 'videos',
-                select: 'title description duration createdAt'
+                select: 'title description duration createdAt videoFile thumbnail views',
             })
             .populate({
                 path: 'owner',
@@ -91,7 +93,7 @@ const getPlaylistById = asyncHandler(async (req, res) => {
     try {
         const { playlistId } = req.params;
 
-        if (!playlistId || mongoose.Types.ObjectId.isValid(playlistId)) {
+        if (!playlistId || !mongoose.Types.ObjectId.isValid(playlistId)) {
             throw new ApiError(422, "Playlist Id is required.")
         }
 
@@ -125,7 +127,7 @@ const updatePlaylistById = asyncHandler(async (req, res) => {
         const { playlistId } = req.params;
         const { name, description } = req.body;
 
-        if (!playlist || !mongoose.Types.ObjectId.isValid(playlistId)) {
+        if (!playlistId || !mongoose.Types.ObjectId.isValid(playlistId)) {
             throw new ApiError(422, "Playlist Id is required.")
         }
 
@@ -200,7 +202,7 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
     try {
         const { videoId, playlistId } = req.params;
 
-        if (!videoId || !mongoose.Types.ObjectId.isvalid(videoId)) {
+        if (!videoId || !mongoose.Types.ObjectId.isValid(videoId)) {
             throw new ApiError(422, "Video Id is required.");
         }
 
@@ -216,7 +218,7 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
             throw new ApiError(404, "Playlist not found.")
         }
 
-        if (playlist.owner.toString() !== userId.toStirng()) {
+        if (playlist.owner.toString() !== userId.toString()) {
             throw new ApiError(403, "You are not authorized to modify this playlist.")
         }
 
@@ -240,13 +242,13 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
 const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
 
     try {
-        const {videoId, playlistId} = req.params;
+        const { videoId, playlistId } = req.params;
 
         if (!videoId || !mongoose.Types.ObjectId.isValid(videoId)) {
             throw new ApiError(422, "Video Id is required.");
         }
 
-        if (!playlistId || !mongoose.Types.ObjectId.isvalid(playlistId)) {
+        if (!playlistId || !mongoose.Types.ObjectId.isValid(playlistId)) {
             throw new ApiError(422, "Playlist Id is required.");
         }
 
