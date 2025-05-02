@@ -1,6 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { ApiError } from "../utils/ApiError.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
+import { ApiError } from "../utils/apiError.js";
+import { ApiResponse } from "../utils/apiResponse.js";
 import { Playlist } from "../models/playlist.model.js";
 
 const createPlaylist = asyncHandler(async (req, res) => {
@@ -190,13 +190,58 @@ const deletePlaylistById = asyncHandler(async (req, res) => {
         );
 
     } catch (error) {
-    console.error("Error: ", error.message);
-    throw new ApiError(500, "Internal server error.");
-}
+        console.error("Error: ", error.message);
+        throw new ApiError(500, "Internal server error.");
+    }
+})
+
+const addVideoToPlaylist = asyncHandler(async (req, res) => {
+
+    try {
+        const { videoId, playlistId } = req.params;
+
+        if (!videoId || !mongoose.Types.ObjectId.isvalid(videoId)) {
+            throw new ApiError(422, "Video Id is required.");
+        }
+
+        if (!playlistId || !mongoose.Types.ObjectId.isValid(playlistId)) {
+            throw new ApiError(422, "Playlist Id is required.");
+        }
+
+        const userId = req.user?._id;
+
+        const playlist = await Playlist.findById(playlistId);
+
+        if (!playlist) {
+            throw new ApiError(404, "Playlist not found.")
+        }
+
+        if (playlist.owner?._id.toString() !== userId.toStirn()) {
+            throw new ApiError(403, "You are not authorized to modify this playlist.")
+        }
+
+        if (playlist.videos.includes(videoId)) {
+            throw new ApiError(409, "Video already exists in the playlist.")
+        }
+
+        playlist.videos.push(videoId);
+        await playlist.save();
+
+        return res.status(200).json(
+            new ApiResponse(200, playlist, "Video added to playlist successfully.")
+        );
+
+    } catch (error) {
+        console.error("Error: ", error.message);
+        throw new ApiError(500, "Internal server error.")
+    }
 })
 
 export {
     createPlaylist,
     getUserPlaylists,
-    getPlaylistById
+    getPlaylistById,
+    updatePlaylistById,
+    deletePlaylistById,
+    addVideoToPlaylist
 }
