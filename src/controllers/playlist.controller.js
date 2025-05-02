@@ -216,7 +216,7 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
             throw new ApiError(404, "Playlist not found.")
         }
 
-        if (playlist.owner.toString() !== userId.toStirn()) {
+        if (playlist.owner.toString() !== userId.toStirng()) {
             throw new ApiError(403, "You are not authorized to modify this playlist.")
         }
 
@@ -246,7 +246,7 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
             throw new ApiError(422, "Video Id is required.");
         }
 
-        if (!playlistId || mongoose.Types.ObjectId.isvalid(playlistId)) {
+        if (!playlistId || !mongoose.Types.ObjectId.isvalid(playlistId)) {
             throw new ApiError(422, "Playlist Id is required.");
         }
 
