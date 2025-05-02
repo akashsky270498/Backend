@@ -135,7 +135,7 @@ const updatePlaylistById = asyncHandler(async (req, res) => {
             throw new ApiError(404, "Playlist not found.");
         }
 
-        if (playlist.owner?._id.toString() !== req.user?._id.toString()) {
+        if (playlist.owner.toString() !== req.user?._id.toString()) {
             throw new ApiError(403, "You are no the authorized person to update this playlist.")
         }
 
@@ -179,7 +179,7 @@ const deletePlaylistById = asyncHandler(async (req, res) => {
             throw new ApiError(404, "playlist not found.");
         }
 
-        if (playlist.owner?._id.toString() !== req.user?._id.toString()) {
+        if (playlist.owner.toString() !== req.user?._id.toString()) {
             throw new ApiError(403, "You are not authorized to delete this playlist.");
         }
 
@@ -216,7 +216,7 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
             throw new ApiError(404, "Playlist not found.")
         }
 
-        if (playlist.owner?._id.toString() !== userId.toStirn()) {
+        if (playlist.owner.toString() !== userId.toStirn()) {
             throw new ApiError(403, "You are not authorized to modify this playlist.")
         }
 
@@ -237,11 +237,58 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
     }
 })
 
+const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
+
+    try {
+        const {videoId, playlistId} = req.params;
+
+        if (!videoId || !mongoose.Types.ObjectId.isValid(videoId)) {
+            throw new ApiError(422, "Video Id is required.");
+        }
+
+        if (!playlistId || mongoose.Types.ObjectId.isvalid(playlistId)) {
+            throw new ApiError(422, "Playlist Id is required.");
+        }
+
+        const userId = req.user?._id;
+
+        const playlist = await Playlist.findById(playlistId);
+
+        if (!playlist) {
+            throw new ApiError(404, "Playlist not found.")
+        }
+
+        if (playlist.owner.toString() !== userId.toString()) {
+            throw new ApiError(403, "You are not authorized to modify this playlist.")
+        }
+
+        const videoIndex = playlist.videos.indexOf(videoId);
+
+        if (videoIndex === -1) {
+            return res.status(404).json(
+                new ApiResponse(404, {}, "Video not found in the playlist.")
+            )
+        }
+
+        playlist.videos.splice(videoIndex, 1);
+        await playlist.save();
+
+        return res.status(200).json(
+            new ApiResponse(200, playlist, "Video removed from playlist successfully.")
+        );
+
+    } catch (error) {
+        console.error("Error: ", error.message);
+        throw new ApiError(500, "Internal server error.");
+    }
+})
+
 export {
     createPlaylist,
     getUserPlaylists,
     getPlaylistById,
     updatePlaylistById,
     deletePlaylistById,
-    addVideoToPlaylist
+    addVideoToPlaylist,
+    removeVideoFromPlaylist
 }
