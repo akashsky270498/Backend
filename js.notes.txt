@@ -1,0 +1,279 @@
+- const => const is a keyword which is used to define a value that can not be changed further.
+ex: const x = 10 --> you can not do x = 20.
+
+- let => let is also a keyword which is used to define a variable whose value can be changed further.
+ex: let x = 10 --> you can do x = 20.
+
+- var => var is also a keyword which is use to define a variable which can also be changed further like let keyword, but it should be avoided as it does not respect block scope. It is a function scoped that can cause unexpected bugs.
+
+- It is allowed to initialize a variable without any value using let keyword (let a) bydefault it will store "undefined".
+
+- It is also allowed to assign  a value directly in a variable without using cont, let & var, it becomes "global variable" which is bad practise and can lead to bugs or memory issues.
+===============================================================================================================================
+- Datatypes => Number, Big Int, Boolean, String, Null , Undefined, Symbol & Object(function || array).
+===============================================================================================================================
+- Hoisting => Hoisting in JS means that "variables & function" declarations are moved to the top of thier scope(page or function) before the code runs. In other word we can use function & variables before they are written into the code.
+
+==> Remember: function declarations are fully hoisted, In case of variables (var, let & const) these are also hoisted but let & const are not initialized but "var" is initialized with value "undefined"
+
+sayHello(); // ✅ This works because the function is hoisted
+
+function sayHello() {
+  console.log("Hello!");
+}
+
+console.log(name); // undefined (variable is hoisted, but not its value)
+var name = "Alice";
+
+console.log(a);    // ❌ ReferenceError
+console.log(b);    // ❌ ReferenceError
+console.log(c);    // ✅ undefined (because of var)
+
+let a = 10;
+const b = 20;
+var c = 30;
+===============================================================================================================================
+
+- undefined => A variable is declared but not given (assigned) any value.
+ex: let a; (a = undefined)
+
+- null => You have intentionaly set the variable to have "no value".
+ex: let a = null;
+===============================================================================================================================
+- Closure => A closure is a function that remembers the variables of it surrounding scope even if that scope has finished its execution. 
+
+function outerFunction() {
+  let name = "Alice"; // This is the variable to "remember"
+  
+  return function innerFunction() {
+    console.log("Hello, " + name); // Still remembers 'name'
+  };
+}
+
+const greet = outerFunction(); // outerFunction is done running
+greet(); // Output: Hello, Alice
+===============================================================================================================================
+
+- Callback => A callback in JS is a simple function that is passed as an argument to another function, and it gets called when the main function finishes its execution. It is a way of to run the code after something else happens especially for things like waiting for data, timeouts, user actions etc.
+
+function orderFood(callback) {
+  console.log("Ordering food...");
+  setTimeout(() => {
+    console.log("Food is ready!");
+    callback(); // Call the function passed as an argument
+  }, 2000);
+}
+
+function eatFood() {
+  console.log("Now eating the food.");
+}
+
+orderFood(eatFood);
+
+===============================================================================================================================
+
+- Promise => A promise in JS is an object that represents the result of an asynchronous operation.
+It can be in one of the three states:
+- Pending: The operation is still ongoing.
+- Fullfiled: The operation got successfully completed. (Resolved)
+- Rejected: The operation got failed. (Reject)
+we handle success case with (.then()) & failure case with (.catch()).
+
+const orderFood = new Promise((resolve, reject) => {
+  const foodDelivered = true;
+
+  if (foodDelivered) {
+    resolve("Food delivered!");
+  } else {
+    reject("Delivery failed.");
+  }
+});
+
+orderFood
+  .then(message => console.log("Success:", message))
+  .catch(error => console.log("Error:", error));
+
+===============================================================================================================================
+
+- setTimeout() => The purpose of setTimeout() function is to delay the execution of specified piece of code || function for a certain period of time. This will not affect the execution of other parts of code.
+
+function test() {
+    console.log("I will get printed after 2 seconds.");
+};
+
+setTimeout(test, 2000)
+
+===============================================================================================================================
+- async => async is a keyword that you put before the function to make it return a Promise automatically.
+- await => await is a keyword that is used inside the async function that pauses the execution of next line of code until the Promise is Resolved or Rejected.
+
+async function makeTea() {
+  await boilWater();   // wait for water to boil
+  addTeaLeaves();      // only runs after water is ready
+  pourIntoCup();
+  drink();
+}
+===============================================================================================================================
+
+- this => "this" (it's a keyword) refers to the object that is currently executing the code.
+
+const person = {
+  name: 'Alice',
+  greet() {
+    console.log('Hello, my name is ' + this.name);
+  }
+};
+
+person.greet(); // Output: Hello, my name is Alice
+
+- In case of an object it refers to the object itself.
+- in case of normal function "this" is undefined.
+- In case of arrow function "this" is lexically bound -> means it takes the value from its parental function.
+
+===============================================================================================================================
+
+- == => loose equality, it compares values after converting the types if needed(type coercion).
+- === => strict equality, it compares value & types with converting anything.
+
+console.log(5 == "5") //true bcoz "5" is converted into a number
+console.log(1 == true) //true bcoz true gets converted into 1
+console.log(null == undefined)// true special case in JS
+console.log(5 === "5")//false bcoz 5 is a number & "5" is a string
+console.log(1 === true)// false bcoz 1 is a number & true is a boolean
+console.log(null === undefined) //fase bcoz both are of different types.
+===============================================================================================================================
+- Implicit Type Coercion => ITC in JS happens when the language automatically converts the one Datatype into another Datatype,
+with out you writing any code to do it.
+
+console.log(5 + "5") //55, 5 is coerced into string "5"
+console.log(1 + true) //2, true is coerced into 1
+console.log(null == undefined)// true, (special case:- null & undefined are loosely equal)
+console.log(5 == "5")//true, 5 is coerced into string "5"
+===============================================================================================================================
+- Higher Order Function => A Higher order function is a function in JS which either takes any functiion as an argument or returns any function as a result or both.
+
+===============================================================================================================================
+- Prototype => In JS, every object has a hidden property called __prototype__,that links to another object called its prototype.
+if u try to access any property or method of any object & let's say if that property or method doesn't exist in that object that, then JS looks for it in the prototype is called prototype chaining & that how inheritance works on JS.
+===============================================================================================================================
+- Local storage => Local storage is the way to store data in the browser that lasts long until you manually deletes it. Even after the opening & closing of the browser also even after turing off your compter , the data will be there in the computer.
+
+- Session storage => Session storage keeps the data only for the current tab or window, once you close the tab or window the data will get vanished.
+
+===============================================================================================================================
+- setImmediate() => Runs the code after the current phase of the event loop finishes in the next phase of the event loop cycle but - "as soon as possible".
+- setTimeout() => Runs the code after the current phase of the event loop finishes in the next phase of event loop cycle but after a minimum delay even if (0ms).
+===============================================================================================================================
+- Nodejs Single Threaded => Nodejs is single threaded because it uses an "Event driven & Non-blocking(asynchronous)" I/O model.
+This design helps it to handle many connections at the same without creating a new thread for each one. It makes nodejs fast & efficient, especially for heavy I/O tasks like reading files, accessing databases or calling APIs.
+===============================================================================================================================
+- Event loop => The event loop is the mechanism in JS that allows it to handle multiple operations like (Api calls, timers, user input etc) without blocking the main thread. It constantly checks if the call stack is empty, is so it picks the tasks from the queue & executes them. This helps JS run asynchronously, even though it's single- threaded.
+
+Ex: 
+console.log("Start");
+
+setImmediate(() => {
+    console.log("Set Immediate");
+});
+
+setTimeout(() => {
+    console.log("Set Timeout");
+}, 1000);
+
+console.log("End");
+
+// o/p:
+// Start
+// End
+// Set Immediate
+// Set Timeout
+
+===============================================================================================================================
+- Middleware: Middleware is expressJs is a function that runs before the request reaches to the controller. It can:
+- Check and change the request & response.
+- Add security checks.
+- Log details.
+- Handle errors.
+
+Every middleware recieves three arguments (req, res, next). The next() function pass the control to next middleware in the line.
+===============================================================================================================================
+- Event emitter => In Nodejs, an event emitter is a built-in module that create, emit & listen to any custom events. Think of it like a communication system between different parts of your application -> "When this happens, do this".
+===============================================================================================================================
+- Bind Method => The bind() method in JS always creates a new function with a permanently fixed "this" value. This ensures the function always uses the same context (this), no matter how or where it is called.
+
+problem:-
+const obj = {
+  name: "Alice",
+  greet() {
+    console.log(`Hello ${this.name}`) // 
+  }
+};
+
+setTimeout(obj.greet, 1000) // Hello undefined
+
+
+solution:-
+const obj = {
+  name: "Alice",
+  greet() {
+    console.log(`Hello ${this.name}`) // 
+  }
+};
+
+const fixedValue = obj.greet.bind(obj);
+setTimeout(fixedValue, 1000) // Hello Alice
+
+===============================================================================================================================
+- Cloning the object => In JS, cloning the object means creating a new object with same properties & values as the original object.
+
+ex: 
+//Shallow clone using Object.assign
+const originalObj = { 1: "A", 2: "B" };
+const clonedObj = Object.assign({}, originalObj);
+console.log("Cloned Object: ", clonedObj); //{ '1': 'A', '2': 'B' }
+
+//Shallow Clone using spread operator.
+const cloneUsingSpread = { ...originalObj };
+console.log("Clone using Spread: ", cloneUsingSpread); //{ '1': 'A', '2': 'B' }
+
+
+//Deep clone using JSON.parse & JSON.stringify
+const original = {
+    a: 1,
+    b: {
+        c: 3
+    }
+};
+
+const obj = Object.assign({}, original);
+const obj1 = {...original};
+const deepObject = JSON.parse(JSON.stringify(original));
+
+console.log(obj); //{ a: 1, b: { c: 3 } }
+console.log(obj1); //{ a: 1, b: { c: 3 } }
+console.log(deepObject); //{ a: 1, b: { c: 3 } }
+
+===============================================================================================================================
+- Memoization => Memoization is the technique used to speed up the function calls by storing or caching the result of function for a given input. If the same input occur again, the function returns the stored results instead of recalculating it.
+===============================================================================================================================
+
+- Synchronous programming => Tasks are executed one after the another (in-sequence), each tasks must be finished before the another starts.
+
+- Asynchronous programming => Tasks can start exeuting before the other gets finished, allowing each task to run independently.
+
+===============================================================================================================================
+- Handling erros:-
+- Using try catch block.
+- Using error handling middlewares.
+- Using promise (.catch).
+- Using validation libraries.
+- Using try cacth with async-await.
+- Using event listeners (process.on()).
+===============================================================================================================================
+- Event Bubbling => Event bubbling is a mechanism in which the an event start from its target element & propagates up to its ancestors (parent element) in the DOM hierarchy.
+===============================================================================================================================
+
+- Arrow function => Arrow function in JS is a short hand syntax for writing a function that uses "=>" symbol & they dont have thier own "this" they inherit it from thier surroundings.
+===============================================================================================================================
+
+
