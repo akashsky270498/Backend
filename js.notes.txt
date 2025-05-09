@@ -275,5 +275,194 @@ console.log(deepObject); //{ a: 1, b: { c: 3 } }
 
 - Arrow function => Arrow function in JS is a short hand syntax for writing a function that uses "=>" symbol & they dont have thier own "this" they inherit it from thier surroundings.
 ===============================================================================================================================
+- querySelector => A versatile method that let you select any element using CSS selectors (like .class #id tag names). Useful when you need flexibility in selecting different types of element.
+
+- getElementById => A faster method that retrives an element only by its id. Useful when you know the exact id & want a better performance.
+
+===============================================================================================================================
+Event Delegation => Event delegation is a technique where you add one event listener to a parent element instead of adding event listerners to each child.
+It works bcoz of event bubbling, when an event happens in the child, it "bubbles up" to its parent.
+===============================================================================================================================
+- event.preventDefault() => We use event.prventDefault() method to stop the browser from performing the default action for an event.
+ex: On clicking the submit button the page usually reloads if we want to stop we can use event.preventDefault().
+
+===============================================================================================================================
+- map() => map() function is used to create a new array by applying the function to each element of the array without modifying the existing array.
+
+const arr = [1, 2, 3, 4, 5];
+const doubleArr = arr.map(num => num * 2)
+console.log("Original Array: ", arr) // [ 1, 2, 3, 4, 5 ]
+console.log("Resultant Array: ", doubleArr) // [ 2, 4, 6, 8, 10 ]
+
+===============================================================================================================================
+- reduce() => The reduce() function in JS is used to iterate over an array & accumulates a single value based on the callback function. It process each element of an array & reduce it to a single number.
+
+const arr = [1,2,6,4,78,9,0,];
+
+const result = arr.reduce((acc, currValue) => {
+    const sum = acc + currValue;
+    return sum
+}, 0)
+
+console.log(result) //100
+
+===============================================================================================================================
+
+- splice() = Splice() function changes the original array by adding or removing elements.
+- slice() => Slice() function creates returns the new array without modifying the original array.
+
+const arr = [1,2,6,4,8,9,0];
+const arr1 = [2,3,4,2,2,6,7,8];
+
+const splice1 = arr.splice(2,3);
+const slice1 = arr1.slice(2,3)
+console.log(splice1) // [6,4,8]
+console.log(slice1) // [4]
+===============================================================================================================================
+- fetch() => fetch() function in JS is used to make the network requests like getting data from API or sending data to a server.
+fetch() function always return promise, means it handels the request asynchronously(it won't block the rest of your code).
+
+ex:
+fetch('https://api.example.com/data')
+  .then(response => response.json()) // Convert response to JSON
+  .then(data => console.log(data))   // Use the data
+  .catch(error => console.error('Error:', error)); // Handle errors
+===============================================================================================================================
+- Scope of Variables => scope of variables in JS define till where the value of variabel if accessible or usable.
+
+- Global variable => Global variable is accessible every where in the code.
+- Local variable => Local variable is accessible only inside the block, function or inside the module of the code where it is defined.
+
+ex:
+const globalVar = "Hi, I am global variable!!";
+
+function test() {
+
+    const localVar = "I am local variable";
+    console.log("GC: ", globalVar);//Accessible
+    console.log("LC: ", localVar); //Accessible
+};
+
+test();
+
+console.log("GC: ", globalVar); //Accessible
+console.log("LC: ", localVar); //Not Accessible
 
 
+===============================================================================================================================
+- cookie => A cookie is the small piece of data stored in the browser by the website to remember information like login, user preference or tracking data. It is automatically sent to the server with every HTTP request.
+
+ex:
+document.cookie = "username=John; path=/; expires=Fri; 31 Dec 2025 23:59:59 GMT" //create
+console.log(document.cookie) // read 
+===============================================================================================================================
+- Currying => Currying is a technique in JS where a function that takes multiple arguments are transformed into a sequence of functions, each taking one argument at a time.
+
+function add(a,b){
+    return a + b;
+}
+function curryed(a) {
+    return function(b) {
+        return a + b
+    }
+}
+===============================================================================================================================
+- IIFE => Self-invoking function (Immediately Invoked Function Expression) IIFE is a function that immediately executes after it is defined. It is typically used to create private scope & avoid polluting the global namespace.
+
+ex:
+(function(){
+    console.log("IIFE executing...")
+})()
+
+===============================================================================================================================
+- Streams => Stream in nodejs are object that let you read or write data piece by piece (in chunks) instead of loading it all the into memory at once. They are used to handle large files & real time data.
+
+ex:
+const fs = require('fs');
+
+//Reading data in chunks
+const readData = fs.createReadStream('example.txt');
+readData.on('data', (chunks) => {
+    console.log(`Reading Data: $(chunks)`);
+})
+===============================================================================================================================
+- Clustering => Clustering in nodejs means running multiple copies of your nodejs application at the same time. These copies are called "Work processess", and they all share the same server & port.
+
+Normally, nodejs runs on a single CPU core, which can limit performance. clustering allows your app to use all CPU cores, so that it can handle more users & multiple requests at the same time.
+===============================================================================================================================
+- Buffer => A buffer is a store in memory used to store raw binary data like - images, files or network data. So that nodejs can process it efficiently, especially when data arrives in chunks(like from streams).
+
+ex:
+const fs = require('fs');
+
+// Reading a file as a buffer
+fs.readFile('image.png', (err, data) => {
+  if (err) throw err;
+  console.log(data); // data is a Buffer
+});
+
+===============================================================================================================================
+- Passport.js => Passport.js is a library used for user authentication. It supports multiple features like login with google, facebook, username & password.
+
+===============================================================================================================================
+- Kafka => Kafka is a tool that helps sending & recieving messages between systems in real-time, especially when handling a large amount of data.
+
+===============================================================================================================================
+- Session based authentication =>  In session-based authentication, the server stores the login information and gives a cookie to the user to stay logged in.
+
+- Token based authentication => In token-based authentication, the server doesn't store login information. It gives a token to the user after login, and the user must send this token with every request.
+
+===============================================================================================================================
+- Rate limiting => Rate limiting is a technique used to control number of API requests a client can make within a specific time period.
+- It hepls to:- 
+- Prevent overloading from server.
+- Stop abusing(like span or attacks).
+- Make sure everyone gets a fair chance.
+
+===============================================================================================================================
+- CORS => CORS (Cross Origin Resource Sharing) is a security feature that control which domains are allowed to access the resources on a web server. It prevents the unauthorized websites from requests to your server, protecting user data.
+===============================================================================================================================
+
+- HTTP codes => HTTP status code indicate the result of the request. They help the client to understand the server response.
+
+===============================================================================================================================
+- Securing sensitive data in API:-
+- HTTPS => Encrypts data during transit.
+- Input validation / sanitization => Blocks malicious input (SQL Injection).
+- Authentication => Verifies who the user is ?
+- Authorization => Controls what user can access ?
+- Secure Headers => Protect against XSS, clickjacking etc.
+- Rate limiting / Throttling => Prevent from brute force & abuse.
+- Data Encryption at Rest => Protects stored data. 
+
+===============================================================================================================================
+- Why is JWT commonly used ?
+- JWT is commonly used because it is stateless, self-contained, easy to validate on the server making it scalable for the distributed system.
+
+===============================================================================================================================
+ - Authentication => Authentication confirms 'who you are'.
+ - Authorization => Authorization confirms 'what you can do'
+===============================================================================================================================
+- MVC => MVC is a design pattern used to seprate bussiness logic.
+- Model -> Manages the data & bussiness logic (eg. databases)
+- View -> Handles the user interface (what users sees)
+- Controller -> Act as middle man, process the user input and updates the view or model.
+
+===============================================================================================================================
+- Rest v/s GraphQl => Rest gives you a set meal. GraphQl let u pick exactly what u want from the buffet with a single plate.
+
+===============================================================================================================================
+- Docker => Docker is tool that lets you package your app & everything that it needs into a small unit called container, so that it can run anywhere, fast, safely & the same every time.
+
+===============================================================================================================================
+- CI/CD (Continous Integration/Continous Deployment) => CI/CD is a process where code is automatically tested, build & deployed so that developer can push there changes faster & safely.
+- CI => Check & build code when developer commits.
+- CD => Push working code to live server automatically.
+===============================================================================================================================
+- Clound Computing => Cloud computing refers to the delivery of computing resources like (servers, databases, networking, software, storage) over the internet, allowing users to access and use resources on-demand without owing the physical infrastructure.
+
+===============================================================================================================================
+- Kubernetes => kubernetes is an open source system for automating the deployments, scaling and management of containerized applications. It helps manage clusters of machines, ensuring that applications run smoothly, are easily scaled and available during failures.
+===============================================================================================================================
+
+- Debugging => Debugging is the process of identifying, analysing & fixing the defects in the code to restore expected functionality. Debugging often involves using tools like debugger, logs & tests to pinpoint the issues.
